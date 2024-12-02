@@ -42,6 +42,7 @@ fondo = pygame.image.load("C:/Users/PC/Desktop/facultad/juego facu/cielo.jpg")
 fondo = pygame.transform.scale(fondo, (ANCHO, ALTO))
 
 salto_sonido = pygame.mixer.Sound("C:/Users/PC/Desktop/facultad/juego facu/cartoon-jump-6462.mp3")
+
 def generar_plataformas():
     plataformas.clear()
     for i in range(10000):
@@ -228,7 +229,7 @@ while True:
                 puntuacion += 1
                 tiempo_restante = min(tiempo_restante + 5, TIEMPO_LIMITE)
 
-        pygame.draw.circle(pantalla, ROJO, (x_pelota, y_pelota - camara_y), radio_pelota)
+        pygame.draw.circle(pantalla, ROJO, (int(x_pelota), int(y_pelota) - camara_y), radio_pelota)
         for plataforma in plataformas:
             pygame.draw.rect(pantalla, GRIS, (plataforma.x, plataforma.y - camara_y, plataforma.width, plataforma.height))
         for moneda in monedas:
