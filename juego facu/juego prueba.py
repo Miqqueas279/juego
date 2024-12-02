@@ -43,6 +43,10 @@ fondo = pygame.transform.scale(fondo, (ANCHO, ALTO))
 
 salto_sonido = pygame.mixer.Sound("C:/Users/PC/Desktop/facultad/juego facu/cartoon-jump-6462.mp3")
 
+sonido_perder = pygame.mixer.Sound("C:/Users/PC/Desktop/facultad/juego facu/perder.mp3")  
+
+sonido_moneda = pygame.mixer.Sound("C:/Users/PC/Desktop/facultad/juego facu/monedas recoger.mp3")  
+
 def generar_plataformas():
     plataformas.clear()
     for i in range(10000):
@@ -115,10 +119,10 @@ def mostrar_menu_inicio():
     mostrar_texto("El Juego de la Bola que Escala", ANCHO // 4, ALTO // 4, fuente_titulo, ROJO)
     
     mostrar_texto("Instrucciones:", ANCHO // 3, ALTO // 2 - 50, fuente, ROJO)
-    mostrar_texto("1. Usa las teclas de flecha para moverte.", ANCHO // 3, ALTO // 2, fuente, ROJO)
+    mostrar_texto("1. Usa las teclas de las flechas izquierda y derecha para moverte.", ANCHO // 3, ALTO // 2, fuente, ROJO)
     mostrar_texto("2. Presiona espacio para saltar.", ANCHO // 3, ALTO // 2 + 30, fuente, ROJO)
     mostrar_texto("3. Colecciona monedas para ganar puntos.", ANCHO // 3, ALTO // 2 + 60, fuente, ROJO)
-    mostrar_texto("4. Evita caer al vacío.", ANCHO // 3, ALTO // 2 + 90, fuente, ROJO)
+    mostrar_texto("4. Evita caer al vacío y que se acabe el tiempo", ANCHO // 3, ALTO // 2 + 90, fuente, ROJO)
     
     dibujar_boton("Jugar", ANCHO // 3, ALTO // 2 + 140, 200, 50, GRIS, ROJO, iniciar_juego)
     dibujar_boton("Salir", ANCHO // 3, ALTO // 2 + 200, 200, 50, GRIS, ROJO, salir_juego)
@@ -126,6 +130,10 @@ def mostrar_menu_inicio():
     pygame.display.flip()
 
 def mostrar_mensaje_perdida():
+    global puntuacion  
+
+    sonido_perder.play()
+
     pantalla.fill(NEGRO)
     
     mostrar_texto("¡PERDISTE!", ANCHO // 3, ALTO // 3, fuente_titulo, ROJO)
@@ -184,17 +192,15 @@ while True:
         else:
             vel_x = 0
 
-        tiempo_actual = pygame.time.get_ticks()
-        if not pausado:
-            delta_tiempo = (tiempo_actual - ultimo_tiempo) / 1000
-            tiempo_restante -= delta_tiempo * 2
-            ultimo_tiempo = tiempo_actual
-            if tiempo_restante <= 0:
-                tiempo_restante = 0
-                mostrar_mensaje_perdida()
-                pygame.time.wait(tiempo_mostrar_mensaje)
-                menu_activo = True
-                juego_activo = False
+        if tiempo_restante <= 0:
+            tiempo_restante = 0
+            mostrar_mensaje_perdida()
+            pygame.time.wait(tiempo_mostrar_mensaje)  
+            menu_activo = True
+            juego_activo = False
+        else:
+            if tiempo_restante > 0:
+                tiempo_restante -= reloj.get_time() / 1000  
 
         vel_y += gravedad
         x_pelota += vel_x
@@ -228,6 +234,7 @@ while True:
                 monedas.remove(moneda)
                 puntuacion += 1
                 tiempo_restante = min(tiempo_restante + 5, TIEMPO_LIMITE)
+                sonido_moneda.play()
 
         pygame.draw.circle(pantalla, ROJO, (int(x_pelota), int(y_pelota) - camara_y), radio_pelota)
         for plataforma in plataformas:
